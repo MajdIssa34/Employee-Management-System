@@ -42,18 +42,20 @@ export const deleteEmployee = async (req, res) => {
 
 
 export const updateEmployee = async (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
+    const updatedData = req.body;
 
-    const product = req.body;
-
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({success: false, message: "Invalid ID!"});
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ success: false, message: "Invalid ID!" });
     }
 
     try {
-        const updatedEmployee = await Employee.findByIdAndUpdate(id, product, {new : true});
-        res.status(200).json({success:true, data: updatedEmployee});
+        const updatedEmployee = await Employee.findByIdAndUpdate(id, updatedData, { new: true });
+        if (!updatedEmployee) {
+            return res.status(404).json({ success: false, message: "Employee not found!" });
+        }
+        res.status(200).json({ success: true, data: updatedEmployee });
     } catch (error) {
-        res.status(500).json({success: false, message: "Server Error"});
+        res.status(500).json({ success: false, message: "Server error" });
     }
 };
